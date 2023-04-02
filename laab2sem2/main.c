@@ -58,7 +58,7 @@ int main() {
 
     printSestertius(compressedFile,wordsA,wordsB,numSwap);
 
-    printCompressedFile(file,compressedFile, wordsA, wordsB, numSwap);
+    printCompressFile(file,compressedFile, wordsA, wordsB, numSwap);
 
     fclose(file);
     fclose(compressedFile);
