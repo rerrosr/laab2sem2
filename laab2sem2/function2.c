@@ -128,16 +128,13 @@ void printCompressFile(FILE* file, FILE* compressedFile, char** wordsA, char** w
         }
 
         int find = 0;
-        for (int i = 0; i < numCheck; i++) {
+        for (int i = 0; i < numCheck && !find; i++) {
             if (strcmp(word, wordsA[i]) == 0) {
                 fprintf(compressedFile, "%s", wordsB[i]);
                 find = 1;
-                break;
-            }
-            else if (strcmp(word, wordsB[i]) == 0) {
+            } else if (strcmp(word, wordsB[i]) == 0) {
                 fprintf(compressedFile, "%s", wordsA[i]);
                 find = 1;
-                break;
             }
         }
         if (!find) {
@@ -145,8 +142,7 @@ void printCompressFile(FILE* file, FILE* compressedFile, char** wordsA, char** w
         }
         if (lastChar != '\0') {
             fprintf(compressedFile, "%c ", lastChar);
-        }
-        else {
+        } else {
             fprintf(compressedFile, " ");
         }
     }
