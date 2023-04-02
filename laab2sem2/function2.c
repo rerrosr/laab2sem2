@@ -115,48 +115,41 @@ void addInfo(FILE* file, SinglyLinkedList* list) {
 }
 
 void printCompressFile(FILE* file, FILE* compressedFile, char** wordsA, char** wordsB, int numCheck) {
-    const int wordSize = 16;
-    char* word = (char*)calloc(wordSize, sizeof(char));
+    int size = 16;
+    char* word = (char*)calloc(size, sizeof(char));
 
     while (fscanf(file, "%16s", word) == 1) {
         unsigned long len = strlen(word);
+        char lastChar = '\0';
 
         if (ispunct(word[len - 1])) {
-            char lastChar = word[len - 1];
+            lastChar = word[len - 1];
             word[len - 1] = '\0';
+        }
 
-            int found = 0;
-            for (int i = 0; i < numCheck && !found; i++) {
-                if (strcmp(word, wordsA[i]) == 0) {
-                    fprintf(compressedFile, "%s%c ", wordsB[i], lastChar);
-                    found = 1;
-                } else if (strcmp(word, wordsB[i]) == 0) {
-                    fprintf(compressedFile, "%s%c ", wordsA[i], lastChar);
-                    found = 1;
-                }
+        int find = 0;
+        for (int i = 0; i < numCheck; i++) {
+            if (strcmp(word, wordsA[i]) == 0) {
+                fprintf(compressedFile, "%s", wordsB[i]);
+                find = 1;
+                break;
             }
-
-            if (!found) {
-                fprintf(compressedFile, "%s%c ", word, lastChar);
-            }
-        } else {
-            int found = 0;
-            for (int i = 0; i < numCheck && !found; i++) {
-                if (strcmp(word, wordsA[i]) == 0) {
-                    fprintf(compressedFile, "%s ", wordsB[i]);
-                    found = 1;
-                } else if (strcmp(word, wordsB[i]) == 0) {
-                    fprintf(compressedFile, "%s ", wordsA[i]);
-                    found = 1;
-                }
-            }
-
-            if (!found) {
-                fprintf(compressedFile, "%s ", word);
+            else if (strcmp(word, wordsB[i]) == 0) {
+                fprintf(compressedFile, "%s", wordsA[i]);
+                find = 1;
+                break;
             }
         }
+        if (!find) {
+            fprintf(compressedFile, "%s", word);
+        }
+        if (lastChar != '\0') {
+            fprintf(compressedFile, "%c ", lastChar);
+        }
+        else {
+            fprintf(compressedFile, " ");
+        }
     }
-
     free(word);
 }
 
