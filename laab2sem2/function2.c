@@ -114,9 +114,9 @@ void addInfo(FILE* file, SinglyLinkedList* list) {
     free(temp);
 }
 
-void printCompressedFile(FILE* file,FILE* compressedFile, char** wordsA, char** wordsB, int numCheck) {
+void printCompressFile(FILE* file, FILE* compressedFile, char** wordsA, char** wordsB, int numCheck) {
     int size = 16;
-    char* word = (char*)calloc(size,sizeof(char));
+    char* word = (char*)calloc(size, sizeof(char));
 
     while (fscanf(file, "%16s", word) == 1) {
         unsigned long len = strlen(word);
@@ -125,34 +125,27 @@ void printCompressedFile(FILE* file,FILE* compressedFile, char** wordsA, char** 
             char lastChar = word[len - 1];
             word[len - 1] = '\0';
             int find = 0;
-            for (int i = 0; i < numCheck; i++) {
+            for (int i = 0; i < numCheck && !find; i++) {
                 if (strcmp(word, wordsA[i]) == 0) {
                     fprintf(compressedFile, "%s%c ", wordsB[i], lastChar);
                     find = 1;
-                    break;
-                }
-                else if (strcmp(word, wordsB[i]) == 0) {
+                } else if (strcmp(word, wordsB[i]) == 0) {
                     fprintf(compressedFile, "%s%c ", wordsA[i], lastChar);
                     find = 1;
-                    break;
                 }
             }
             if (!find) {
                 fprintf(compressedFile, "%s%c ", word, lastChar);
             }
-        }
-        else {
+        } else {
             int find = 0;
-            for (int i = 0; i < numCheck; i++) {
+            for (int i = 0; i < numCheck && !find; i++) {
                 if (strcmp(word, wordsA[i]) == 0) {
                     fprintf(compressedFile, "%s ", wordsB[i]);
                     find = 1;
-                    break;
-                }
-                else if (strcmp(word, wordsB[i]) == 0) {
+                } else if (strcmp(word, wordsB[i]) == 0) {
                     fprintf(compressedFile, "%s ", wordsA[i]);
                     find = 1;
-                    break;
                 }
             }
             if (!find) {
