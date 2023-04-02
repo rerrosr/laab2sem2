@@ -115,8 +115,8 @@ void addInfo(FILE* file, SinglyLinkedList* list) {
 }
 
 void printCompressFile(FILE* file, FILE* compressedFile, char** wordsA, char** wordsB, int numCheck) {
-    int size = 16;
-    char* word = (char*)calloc(size, sizeof(char));
+    const int wordSize = 16;
+    char* word = (char*)calloc(wordSize, sizeof(char));
 
     while (fscanf(file, "%16s", word) == 1) {
         unsigned long len = strlen(word);
@@ -124,38 +124,41 @@ void printCompressFile(FILE* file, FILE* compressedFile, char** wordsA, char** w
         if (ispunct(word[len - 1])) {
             char lastChar = word[len - 1];
             word[len - 1] = '\0';
-            int find = 0;
-            for (int i = 0; i < numCheck && !find; i++) {
+
+            int found = 0;
+            for (int i = 0; i < numCheck && !found; i++) {
                 if (strcmp(word, wordsA[i]) == 0) {
                     fprintf(compressedFile, "%s%c ", wordsB[i], lastChar);
-                    find = 1;
+                    found = 1;
                 } else if (strcmp(word, wordsB[i]) == 0) {
                     fprintf(compressedFile, "%s%c ", wordsA[i], lastChar);
-                    find = 1;
+                    found = 1;
                 }
             }
-            if (!find) {
+
+            if (!found) {
                 fprintf(compressedFile, "%s%c ", word, lastChar);
             }
         } else {
-            int find = 0;
-            for (int i = 0; i < numCheck && !find; i++) {
+            int found = 0;
+            for (int i = 0; i < numCheck && !found; i++) {
                 if (strcmp(word, wordsA[i]) == 0) {
                     fprintf(compressedFile, "%s ", wordsB[i]);
-                    find = 1;
+                    found = 1;
                 } else if (strcmp(word, wordsB[i]) == 0) {
                     fprintf(compressedFile, "%s ", wordsA[i]);
-                    find = 1;
+                    found = 1;
                 }
             }
-            if (!find) {
+
+            if (!found) {
                 fprintf(compressedFile, "%s ", word);
             }
         }
     }
+
     free(word);
 }
-
 
 int mostPopularWord(SinglyLinkedList* list, int wordsCount) {
     int mostPopularIndex = -1;
