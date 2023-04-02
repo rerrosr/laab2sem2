@@ -116,7 +116,7 @@ void addInfo(FILE* file, SinglyLinkedList* list) {
 
 void printCompressFile(FILE* file, FILE* compressedFile, char** wordsA, char** wordsB, int numCheck) {
     int size = 16;
-    char* word = (char*)calloc(size, sizeof(char));
+    char *word = (char *) calloc(size, sizeof(char));
 
     while (fscanf(file, "%16s", word) == 1) {
         unsigned long len = strlen(word);
@@ -127,27 +127,31 @@ void printCompressFile(FILE* file, FILE* compressedFile, char** wordsA, char** w
             word[len - 1] = '\0';
         }
 
-        int find = 0;
-        for (int i = 0; i < numCheck && !find; i++) {
+        int i = 0;
+        while (i < numCheck && strcmp(word, wordsA[i]) != 0 && strcmp(word, wordsB[i]) != 0) {
+            i++;
+        }
+
+        if (i < numCheck) {
             if (strcmp(word, wordsA[i]) == 0) {
                 fprintf(compressedFile, "%s", wordsB[i]);
-                find = 1;
-            } else if (strcmp(word, wordsB[i]) == 0) {
+            } else {
                 fprintf(compressedFile, "%s", wordsA[i]);
-                find = 1;
             }
-        }
-        if (!find) {
+        } else {
             fprintf(compressedFile, "%s", word);
         }
+
         if (lastChar != '\0') {
             fprintf(compressedFile, "%c ", lastChar);
         } else {
             fprintf(compressedFile, " ");
         }
     }
+
     free(word);
 }
+
 
 int mostPopularWord(SinglyLinkedList* list, int wordsCount) {
     int mostPopularIndex = -1;
