@@ -16,7 +16,7 @@ int main() {
         printf("Error\n");
         exit(1);
     }
-    addInfo(file, list);
+    addWordInStruct(file, list);
 
 
     fclose(file);
@@ -56,7 +56,10 @@ int main() {
         }
     }
 
-    printSestertius(compressedFile,wordsA,wordsB,numSwap);
+    freeList(list);
+
+
+    printCouple(compressedFile,wordsA,wordsB,numSwap);
 
     printCompressFile(file,compressedFile, wordsA, wordsB, numSwap);
 
