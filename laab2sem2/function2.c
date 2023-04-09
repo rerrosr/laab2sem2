@@ -1,8 +1,9 @@
 #include "funct2.h"
+#define SIZE 32
 
 
 void pushBack(SinglyLinkedList* list,const char* text, int len, int count) {
-    Node* ptr = (Node*)malloc(1 * sizeof(Node));
+    Node* ptr = (Node*)malloc( sizeof(Node));
     ptr->count = count;
     ptr->len = len;
     if (len > 0) {
@@ -32,7 +33,7 @@ int profit(SinglyLinkedList* list, int popular, int rare) {
     int countA = at(list, popular)->count;
     int countB = at(list, rare)->count;
 
-    if (lenA * countA + lenB*countB - lenA * countB + lenB * countA ) {
+    if (lenA * countA + lenB * countB - lenA * countB - lenB * countA-lenB-lenA>0) {
         return 1;
     } else {
         return 0;
@@ -40,7 +41,7 @@ int profit(SinglyLinkedList* list, int popular, int rare) {
 }
 
 
-Node* at(SinglyLinkedList* list, int index) {
+Node* at(SinglyLinkedList* list, int index) { //извлекает узел по заданному индексу в связанном списке
     if (index < 0 || index >= list->sizes) {
         return NULL;
     }
@@ -60,19 +61,19 @@ void singlyListInfo(SinglyLinkedList* list)
     Node* temp;
     temp = list->head;
     while (temp != NULL) {
-        printf("%d %d %s\n", temp->count, temp->len, temp->text);
+        printf("Replacements: %d Lengths: %d Word: %s\n", temp->count, temp->len, temp->text);
         temp = temp->next;
     }
 }
 
-int checkIndex(SinglyLinkedList* list,const char* compword)
+int checkIndex(SinglyLinkedList* list,const char* compWord) //возвращаем индекс
 {
     if (list != NULL && list->head != NULL) {
         Node* ptr;
         ptr = list->head;
         int i = 0;
         while (ptr != NULL) {
-            if (strcmp(ptr->text, compword) == 0) {
+            if (strcmp(ptr->text, compWord) == 0) {
                 return i;
             }
             ptr = ptr->next;
@@ -84,74 +85,46 @@ int checkIndex(SinglyLinkedList* list,const char* compword)
 
 
 
-void addInfo(FILE* file, SinglyLinkedList* list) {
-    int size = 32;
-    char* word = (char*)calloc(size, sizeof(char));
-    char* temp = (char*)calloc(size, sizeof(char));
+void addWordInStruct(FILE* file, SinglyLinkedList* list) {
+    char* word = (char*)calloc(SIZE, sizeof(char));
 
     while (fscanf(file, "%32s", word) == 1) {
-        const unsigned long len = strlen(word);
-
-        if (len > 0 && ispunct(word[len - 1])) {
-            // remove punctuation mark from the end of the word
-            strncpy(temp, word, len - 1);
-            temp[len - 1] = '\0';
-            strcpy(word, temp);
-        }
 
         int index;
         if ((index = checkIndex(list, word)) == -1) {
-            // if word is encountered for the first time, add it to the list
             pushBack(list, word, (int)strlen(word), 1);
         }
         else {
-            // increment count for the word if it's already in the list
             at(list, index)->count++;
         }
     }
 
     free(word);
-    free(temp);
 }
 
-void printCompressFile(FILE* file, FILE* compressedFile, char** wordsA, char** wordsB, int numCheck) {
+void printCompressFile(FILE* file,FILE* compressedFile, char** wordsA, char** wordsB, int numReplacements) {
     int size = 16;
     char *word = (char *) calloc(size, sizeof(char));
 
     while (fscanf(file, "%16s", word) == 1) {
-        unsigned long len = strlen(word);
-        char lastChar = '\0';
-
-        if (ispunct(word[len - 1])) {
-            lastChar = word[len - 1];
-            word[len - 1] = '\0';
-        }
-
-        int i = 0;
-        while (i < numCheck && strcmp(word, wordsA[i]) != 0 && strcmp(word, wordsB[i]) != 0) {
-            i++;
-        }
-
-        if (i < numCheck) {
+        int found = 0;
+        for (int i = 0; i < numReplacements; i++) {
             if (strcmp(word, wordsA[i]) == 0) {
-                fprintf(compressedFile, "%s", wordsB[i]);
-            } else {
-                fprintf(compressedFile, "%s", wordsA[i]);
+                fprintf(compressedFile, "%s ", wordsB[i]);
+                found = 1;
+                break;
+            } else if (strcmp(word, wordsB[i]) == 0) {
+                fprintf(compressedFile, "%s ", wordsA[i]);
+                found = 1;
+                break;
             }
-        } else {
-            fprintf(compressedFile, "%s", word);
         }
-
-        if (lastChar != '\0') {
-            fprintf(compressedFile, "%c ", lastChar);
-        } else {
-            fprintf(compressedFile, " ");
+        if (!found) {
+            fprintf(compressedFile, "%s ", word);
         }
     }
-
     free(word);
 }
-
 
 int mostPopularWord(SinglyLinkedList* list, int wordsCount) {
     int mostPopularIndex = -1;
@@ -190,7 +163,7 @@ void eraseNode(SinglyLinkedList*list,const char *wordRemove) {
 
     while (nodeRemove != NULL) {
         if (strcmp(nodeRemove->text, wordRemove) == 0) {
-            if (prevNode == NULL) { // node to remove is the head
+            if (prevNode == NULL) {
                 list->head = nodeRemove->next;
             } else {
                 prevNode->next = nodeRemove->next;
@@ -205,9 +178,24 @@ void eraseNode(SinglyLinkedList*list,const char *wordRemove) {
     }
 }
 
-void printSestertius(FILE* compressFile, char** wordA, char** wordB,int num) {
+void printCouple(FILE* compressFile, char** wordA, char** wordB,int num) {
     for(int i = 0;i<num;i++) {
         fprintf(compressFile, "$%s$%s", wordA[i], wordB[i]);
     }
     fprintf(compressFile,"\n");
+}
+
+void freeList(SinglyLinkedList* list)
+{
+    Node* current = list->head;
+    while(current!=NULL)
+    {
+        Node* temp = current;
+        current = current->next;
+        free(temp->text);
+        free(temp);
+    }
+    list->head = NULL;
+    list->tail = NULL;
+    list->sizes = 0;
 }
