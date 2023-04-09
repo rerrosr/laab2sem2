@@ -3,8 +3,10 @@
 #include <string.h>
 #include <ctype.h>
 
+
 #ifndef LAAB2SEM2_FUNCT2_H
 #define LAAB2SEM2_FUNCT2_H
+
 
 
 typedef struct Node {
@@ -22,16 +24,16 @@ typedef struct SinglyLinkedList{
 
 void singlyListInfo(SinglyLinkedList*);
 int checkIndex(SinglyLinkedList*,const char*);
-void addInfo(FILE*, SinglyLinkedList *);
+void addWordInStruct(FILE*, SinglyLinkedList *);
 void printCompressFile(FILE*,FILE*, char**, char**,int);
 int mostPopularWord(SinglyLinkedList*, int);
 int mostUnpopularWord(SinglyLinkedList*, int);
-void printSestertius(FILE*, char**, char**,int);
+void printCouple(FILE*, char**, char**,int);
 Node* at(SinglyLinkedList*,int);
 void pushBack(SinglyLinkedList*,const char*,int,int);
 void eraseNode(SinglyLinkedList*,const char *);
 int profit(SinglyLinkedList*,int,int);
+void freeList(SinglyLinkedList*);
 
 #endif LAAB2SEM2_FUNCT2_H
-
 
